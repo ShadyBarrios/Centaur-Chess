@@ -8,6 +8,8 @@ import javafx.scene.image.ImageView;
 abstract class Piece implements Enums{
 	protected ImageView image; // image shown in FXML
 	
+	boolean hasMoved;
+	
 	protected Players color;
 	protected Pieces piece;
 	
@@ -19,12 +21,16 @@ abstract class Piece implements Enums{
 	public Piece(Players color, int x, int y) {
 		setPosition(x,y);
 		this.color = color;
+		this.hasMoved = false;
 	}
 	
 	public Piece(Players color, Coordinate coor) {
 		this.currentPosition = coor;
 		this.color = color;
+		this.hasMoved = false;
 	}
+	
+	public void moved() {this.hasMoved = true;}
 	
 	public void setPosition(int x, int y) {this.currentPosition = new Coordinate(x,y);}
 	public void setPosition(Coordinate coor) {this.currentPosition = coor;}
@@ -129,6 +135,18 @@ abstract class Piece implements Enums{
 			coordinates.add(new Coordinate(currentX - iterX, currentY - iterY));
 			iterX++; iterY++;	
 		}while(currentX - iterX >= LowerLimit && currentY - iterY >= LowerLimit);
+		
+		return coordinates;
+	}
+	
+	protected List<Coordinate> surroundingCoordinates(int yManip){
+		List<Coordinate> coordinates = new ArrayList<Coordinate>();
+		int currentX = this.currentPosition.getX();
+		int currentY = this.currentPosition.getY();
+		
+		for(int i = -1; i <= 1; i++) 
+			if(currentX + i >= LowerLimit && currentX + i <= UpperLimit)
+				coordinates.add(new Coordinate(currentX + i, currentY + yManip));
 		
 		return coordinates;
 	}

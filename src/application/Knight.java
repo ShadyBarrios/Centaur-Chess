@@ -33,7 +33,7 @@ public class Knight extends Piece{
 	}
 	
 	@Override
-	public String getInitial() {return "K";}
+	public String getInitial() {return "N";}
 
 	@Override
 	public List<Coordinate> getAvaliablePositions() {
