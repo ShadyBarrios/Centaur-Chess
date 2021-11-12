@@ -51,9 +51,6 @@ public class Board extends Coordinate implements Enums{
 		PieceSelected = null;
 		justEliminated = false;
 		GameOver = false;
-		
-		
-		
 		turn = Players.WHITE;
 	}
 	
@@ -181,7 +178,7 @@ public class Board extends Coordinate implements Enums{
 					e.printStackTrace();
 				}
 			}
-			else if(piece.type == Pieces.PAWN) {
+			else if(piece.type == Pieces.PAWN && !GameOver) {
 				return PawnExchange((Pawn)piece);
 			}
 			else
@@ -225,7 +222,7 @@ public class Board extends Coordinate implements Enums{
 			piece.setPosition(NewCoor);
 			piece.moved();
 			PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
-			if(piece.type == Pieces.PAWN)
+			if(piece.type == Pieces.PAWN && !GameOver)
 				PawnExchange((Pawn)piece);
 		}
 		
