@@ -8,16 +8,21 @@ public class Knight extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteKnight.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackKnight.png";
 	
-	public Knight(Players type, int x, int y) {
-		super(type, x, y);
+	@Override
+	protected void ConstructRest() {
 		this.type = Pieces.KNIGHT;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		this.thickness = Thickness.THICK;
+	}
+	
+	public Knight(Players type, int x, int y) {
+		super(type, x, y);
+		ConstructRest();
 	}
 	
 	public Knight(Players type, Coordinate coor) {
 		super(type, coor);
-		this.type = Pieces.KNIGHT;
-		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		ConstructRest();
 	}
 	
 	@Override

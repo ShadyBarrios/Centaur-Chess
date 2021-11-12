@@ -9,16 +9,21 @@ public class King extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteKing.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackKing.png";
 	
-	public King(Players type, int x, int y) {
-		super(type, x, y);
+	@Override
+	protected void ConstructRest() {
 		this.type = Pieces.KING;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		this.thickness = Thickness.SKINNY;
+	}
+	
+	public King(Players type, int x, int y) {
+		super(type, x, y);
+		ConstructRest();
 	}
 	
 	public King(Players type, Coordinate coor) {
 		super(type, coor);
-		this.type = Pieces.KING;
-		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		ConstructRest();
 	}
 	
 	@Override
@@ -62,6 +67,4 @@ public class King extends Piece{
 		
 		return coordinates;
 	}
-	
-	
 }

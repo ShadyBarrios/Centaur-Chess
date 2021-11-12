@@ -12,6 +12,7 @@ abstract class Piece implements Enums{
 	
 	protected Players color;
 	protected Pieces type;
+	protected Thickness thickness;
 	
 	// applys for both x and y
 	public static final int UpperLimit = 8, LowerLimit = 1;
@@ -19,6 +20,8 @@ abstract class Piece implements Enums{
 	private static List<Integer> createdIDs = new ArrayList<Integer>();
 	protected Coordinate currentPosition;
 	protected String PathToBlack, PathToWhite;
+	
+	public Piece() {}
 	
 	public Piece(Players color, int x, int y) {
 		setPosition(x,y);
@@ -45,6 +48,7 @@ abstract class Piece implements Enums{
 	
 	abstract public List<Coordinate> getAvaliablePositions();
 	abstract public String getInitial();
+	abstract protected void ConstructRest();
 
 	public boolean isOnLine(Coordinate coor) {
 		for(Coordinate valid : getAvaliablePositions())

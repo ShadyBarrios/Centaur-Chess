@@ -10,16 +10,21 @@ public class Pawn extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhitePawn.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackPawn.png";
 	
-	public Pawn(Players type, int x, int y) {
-		super(type, x, y);
+	@Override
+	protected void ConstructRest() {
 		this.type = Pieces.PAWN;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		this.thickness = Thickness.THICK;
+	}
+	
+	public Pawn(Players type, int x, int y) {
+		super(type, x, y);
+		ConstructRest();
 	}
 	
 	public Pawn(Players type, Coordinate coor) {
 		super(type, coor);
-		this.type = Pieces.PAWN;
-		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		ConstructRest();
 	}
 	
 	@Override

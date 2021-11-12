@@ -9,16 +9,21 @@ public class Bishop extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteBishop.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackBishop.png";
 	
-	public Bishop(Players type, int x, int y) {
-		super(type, x, y);
+	@Override
+	protected void ConstructRest() {
 		this.type = Pieces.BISHOP;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		this.thickness = Thickness.SKINNY;
+	}
+	
+	public Bishop(Players type, int x, int y) {
+		super(type, x, y);
+		ConstructRest();
 	}
 	
 	public Bishop(Players type, Coordinate coor) {
 		super(type, coor);
-		this.type = Pieces.BISHOP;
-		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		ConstructRest();
 	}
 	
 	@Override

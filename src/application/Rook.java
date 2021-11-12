@@ -8,16 +8,21 @@ public class Rook extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteRook.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackRook.png";
 	
-	public Rook(Players type, int x, int y) {
-		super(type, x, y);
+	@Override
+	protected void ConstructRest() {
 		this.type = Pieces.ROOK;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		this.thickness = Thickness.THICK;
+	}
+	
+	public Rook(Players type, int x, int y) {
+		super(type, x, y);
+		ConstructRest();
 	}
 	
 	public Rook(Players type, Coordinate coor) {
 		super(type, coor);
-		this.type = Pieces.ROOK;
-		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		ConstructRest();
 	}
 	
 	

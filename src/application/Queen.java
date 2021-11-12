@@ -7,16 +7,22 @@ import javafx.scene.image.Image;
 public class Queen extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteQueen.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackQueen.png";
-	public Queen(Players type, int x, int y) {
-		super(type, x, y);
+	
+	@Override
+	protected void ConstructRest() {
 		this.type = Pieces.QUEEN;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		this.thickness = Thickness.SKINNY;
+	}
+	
+	public Queen(Players type, int x, int y) {
+		super(type, x, y);
+		ConstructRest();
 	}
 	
 	public Queen(Players type, Coordinate coor) {
 		super(type, coor);
-		this.type = Pieces.QUEEN;
-		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+		ConstructRest();
 	}
 	
 	@Override

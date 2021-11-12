@@ -342,6 +342,8 @@ public class Board extends Coordinate implements Enums{
 				pane = PlayingBoardPane[y][x];
 				imgView = getImageView(pane);
 				imgView.setImage((PlayingBoard[y][x] != null) ? PlayingBoard[y][x].getImage() : null);
+				if(PlayingBoard[y][x] != null)
+					imgView.setLayoutX((PlayingBoard[y][x].thickness == Thickness.THICK) ? 15 : (PlayingBoard[y][x].type == Pieces.KING ? 20 : 18) );
 			}
 		}
 	}
