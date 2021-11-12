@@ -4,33 +4,25 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import application.Enums.Players;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class King extends Piece{
 	
+	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteKing.png";
+	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackKing.png";
+	
 	public King(Players type, int x, int y) {
 		super(type, x, y);
-		this.piece = Pieces.KING;
+		this.type = Pieces.KING;
+		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 	}
 	
 	public King(Players type, Coordinate coor) {
 		super(type, coor);
-		this.piece = Pieces.KING;
-	}
-	
-	@Override
-	public boolean isOnLine(Coordinate coor) {
-		boolean result;
-		// x dif and y dif get the absolute value of the distances in the axes
-		// if |change in x| == |change in y|, |slope| is 1 and is on path for King
-		if(currentPosition.matchesX(coor) || currentPosition.matchesY(coor))
-			result = true;
-		else if(currentPosition.xDifference(coor) == currentPosition.yDifference(coor))
-			result = true;
-		else 
-			result = false;
-		
-		return result;
+		this.type = Pieces.KING;
+		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 	}
 	
 	@Override
@@ -43,6 +35,7 @@ public class King extends Piece{
 		coordinates.addAll(topCoordinates());	
 		coordinates.addAll(middleCoordinates());
 		coordinates.addAll(bottomCoordinates());
+		coordinates.addAll(castleCoordinates());
 		
 		return coordinates;
 	}
@@ -58,4 +51,21 @@ public class King extends Piece{
 	private List<Coordinate> bottomCoordinates(){
 		return (this.currentPosition.getY() == 1) ? new ArrayList<Coordinate>() : surroundingCoordinates(-1);
 	}
+	
+	private List<Coordinate> castleCoordinates(){
+		List<Coordinate> coordinates = new ArrayList<Coordinate>();
+		if(this.hasMoved)
+			return coordinates;
+		
+		int currentY = this.currentPosition.getY();
+		
+		if(this.CanCastleRight())
+			coordinates.add(new Coordinate(7, currentY));
+		if(this.CanCastleLeft())
+			coordinates.add(new Coordinate(3, currentY));
+		
+		return coordinates;
+	}
+	
+	
 }

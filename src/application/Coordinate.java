@@ -22,6 +22,12 @@ public class Coordinate{
 	public boolean matchesX(Coordinate coor) {return this.x == coor.x;}
 	public boolean matchesY(Coordinate coor) {return this.y == coor.y;}
 	public boolean matches(Coordinate coor) {return (this.x == coor.x && this.y == coor.y);}
+
+	public int toPaneCoordinate() {
+		// fxml goes from top to bottom y axis
+		return ( ((this.y - 8) * (-8)) + (this.x - 1) );
+		
+	}
 	
 	public String toString() {return "( " + x + " , " + y + " )";}
 }

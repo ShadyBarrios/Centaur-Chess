@@ -4,31 +4,26 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import application.Enums.Players;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 public class Rook extends Piece{
+	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteRook.png";
+	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackRook.png";
 	
 	public Rook(Players type, int x, int y) {
 		super(type, x, y);
-		this.piece = Pieces.ROOK;
+		this.type = Pieces.ROOK;
+		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 	}
 	
 	public Rook(Players type, Coordinate coor) {
 		super(type, coor);
-		this.piece = Pieces.ROOK;
+		this.type = Pieces.ROOK;
+		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 	}
 	
-	@Override
-	public boolean isOnLine(Coordinate coor) {
-		boolean result;
-		
-		if(currentPosition.matchesX(coor) || currentPosition.matchesY(coor))
-			result = true;
-		else 
-			result = false;
-		
-		return result;
-	}
 	
 	@Override
 	public String getInitial() {return "R";}
