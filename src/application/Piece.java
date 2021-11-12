@@ -9,7 +9,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 
 abstract class Piece implements Enums{
-	protected Image image; // image shown in FXML
+	protected Image image; // Image shown in FXML
 	
 	boolean hasMoved;
 	
