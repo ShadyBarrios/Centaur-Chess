@@ -10,11 +10,17 @@ public class Pawn extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhitePawn.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackPawn.png";
 	
+	// if white is parallel with black after black is on 2nd row from base, white can take black diagonally
+	// vice versa with white
+	
+	//en passant
+	
 	@Override
 	protected void ConstructRest() {
 		this.type = Pieces.PAWN;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 		this.thickness = Thickness.THICK;
+		this.numberOfMoves = 0;
 	}
 	
 	public Pawn(Players type, int x, int y) {
@@ -47,16 +53,18 @@ public class Pawn extends Piece{
 		
 		switch(this.color){
 		case WHITE:
-			if(currentY < UpperLimit && Board.slot(new Coordinate(currentX, currentY + 1)) == null)
+			if(currentY < UpperLimit && Board.slot(new Coordinate(currentX, currentY + 1)) == null) {
 				coordinates.add(new Coordinate(currentX, currentY + 1));
-			if(!hasMoved && currentY < UpperLimit - 1 && Board.slot(new Coordinate(currentX, currentY + 2)) == null)
-				coordinates.add(new Coordinate(currentX, currentY + 2));
+				if(!hasMoved && Board.slot(new Coordinate(currentX, currentY + 2)) == null) 
+					coordinates.add(new Coordinate(currentX, currentY + 2));
+			}
 			break;
 		case BLACK:
-			if(currentY > LowerLimit && Board.slot(new Coordinate(currentX, currentY - 1)) == null)
+			if(currentY > LowerLimit && Board.slot(new Coordinate(currentX, currentY - 1)) == null) {
 				coordinates.add(new Coordinate(currentX, currentY - 1));
-			if(!hasMoved && currentY > LowerLimit + 1 && Board.slot(new Coordinate(currentX, currentY - 2)) == null)
-				coordinates.add(new Coordinate(currentX, currentY - 2));
+				if(!hasMoved && Board.slot(new Coordinate(currentX, currentY - 2)) == null )
+					coordinates.add(new Coordinate(currentX, currentY - 2));
+			}
 			break;
 		}
 		
@@ -95,6 +103,55 @@ public class Pawn extends Piece{
 				if(Board.slot(new Coordinate(currentX + 1, currentY - 1)) != null){
 					if(Board.slot(new Coordinate(currentX + 1, currentY - 1)).color != this.color)
 						coordinates.add(new Coordinate(currentX + 1, currentY -1));
+				}
+			}
+			break;
+		}
+		
+		coordinates.addAll(EnPassant());
+		
+		return coordinates;
+	}
+	
+	public List<Coordinate> EnPassant(){
+		List<Coordinate> coordinates = new ArrayList<Coordinate>();
+		int currentX = currentPosition.getX();
+		int currentY = currentPosition.getY();
+		Piece piece;
+		switch(this.color) {
+		case WHITE:
+			if(currentY == 5) {
+				if(currentX < UpperLimit) {
+					piece = Board.slot(new Coordinate(currentX + 1, currentY));
+					if(piece != null) {
+						if(piece.type == Pieces.PAWN && piece.color != this.color)
+							coordinates.add(new Coordinate(currentX + 1, currentY + 1));
+					}
+				}
+				if(currentX > LowerLimit) {
+					piece = Board.slot(new Coordinate(currentX - 1, currentY));
+					if(piece != null) {
+						if(piece.type == Pieces.PAWN && piece.color != this.color)
+							coordinates.add(new Coordinate(currentX - 1, currentY + 1));
+					}
+				}
+			}
+			break;
+		case BLACK:
+			if(currentY == 4) {
+				if(currentX < UpperLimit) {
+					piece = Board.slot(new Coordinate(currentX + 1, currentY));
+					if(piece != null) {
+						if(piece.type == Pieces.PAWN && piece.color != this.color && piece.numberOfMoves <= 1)
+							coordinates.add(new Coordinate(currentX + 1, currentY - 1));
+					}
+				}
+				if(currentX > LowerLimit) {
+					piece = Board.slot(new Coordinate(currentX - 1, currentY));
+					if(piece != null) {
+						if(piece.type == Pieces.PAWN && piece.color != this.color && piece.numberOfMoves <= 1)
+							coordinates.add(new Coordinate(currentX - 1, currentY - 1));
+					}
 				}
 			}
 			break;

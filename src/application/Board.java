@@ -89,51 +89,40 @@ public class Board extends Coordinate implements Enums{
 	}
 	
 	private Piece ConstructPawnExchange(Pawn pawn) {
-		List<Piece> avaliable = EliminatedPiecesFrom(pawn.color);
-		if(avaliable.isEmpty()) {
-			JOptionPane.showMessageDialog(null, "Congrats! But you haven't lost any pieces!");
+		Object[] options = {"QUEEN", "BISHOP", "ROOK", "KNIGHT"};
+		String choice = (String)JOptionPane.showInputDialog(null, "Congrats! Choose one of your eliminated pieces", 
+				"Pawn Exchange",JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+		if(choice == null)
 			return null;
-		}
 		else {
-			Object[] options = new Object[avaliable.size()];
-			for(int i = 0; i < options.length; i++)
-				options[i] = avaliable.get(i).toString();
-			String choice = (String)JOptionPane.showInputDialog(null, "Congrats! Choose one of your eliminated pieces", 
-					"Pawn Exchange",JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
-			if(choice == null)
-				return null;
-			else {
-				switch(choice) {
-				case "PAWN":
-					return pawn;
-				case "QUEEN":
-					return new Queen(pawn.color, pawn.getPosition());
-				case "ROOK":
-					return new Rook(pawn.color, pawn.getPosition());
-				case "BISHOP":
-					return new Bishop(pawn.color, pawn.getPosition());
-				case "KNIGHT":
-					return new Knight(pawn.color, pawn.getPosition());
-				default:
-						return null;
-				}
+			switch(choice) {
+			case "QUEEN":
+				return new Queen(pawn.color, pawn.getPosition());
+			case "ROOK":
+				return new Rook(pawn.color, pawn.getPosition());
+			case "BISHOP":
+				return new Bishop(pawn.color, pawn.getPosition());
+			case "KNIGHT":
+				return new Knight(pawn.color, pawn.getPosition());
+			default:
+					return null;
 			}
 		}
 	}
 	
-	private List<Piece> EliminatedPiecesFrom(Players side){
-		List<Piece> elim = EliminatedPieces.stream().filter(piece -> (piece.color == side && piece.type != Pieces.PAWN)).toList();
-		return elim;
-	}
-	
-	private void RemoveFromEliminatedList(Piece piece) {
-		for(int i = 0; i < EliminatedPieces.size(); i++) {
-			if(EliminatedPieces.get(i).matches(piece)) {
-				EliminatedPieces.remove(i);
-				return;
-			}	
-		}
-	}
+//	private List<Piece> EliminatedPiecesFrom(Players side){
+//		List<Piece> elim = EliminatedPieces.stream().filter(piece -> (piece.color == side && piece.type != Pieces.PAWN)).toList();
+//		return elim;
+//	}
+//	
+//	private void RemoveFromEliminatedList(Piece piece) {
+//		for(int i = 0; i < EliminatedPieces.size(); i++) {
+//			if(EliminatedPieces.get(i).matches(piece)) {
+//				EliminatedPieces.remove(i);
+//				return;
+//			}	
+//		}
+//	}
 	
 	private boolean PawnExchange(Pawn piece) {
 		if(piece.color == Players.WHITE && piece.currentPosition.getY() != Piece.UpperLimit)
@@ -144,7 +133,6 @@ public class Board extends Coordinate implements Enums{
 		Piece replacement = ConstructPawnExchange(piece);
 		if(replacement != null) {
 			replacement.moved();
-			RemoveFromEliminatedList(replacement);
 			PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = replacement;
 		}
 		else {
@@ -189,7 +177,7 @@ public class Board extends Coordinate implements Enums{
 			Piece rook;
 			// right side castle
 			if(NewCoor.getX() > piece.currentPosition.getX()) {
-				rook = Board.slot(new Coordinate(8, piece.getPosition().getY()));
+				rook = (Rook)Board.slot(new Coordinate(8, piece.getPosition().getY()));
 				// set king
 				PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
 				piece.setPosition(NewCoor);
@@ -198,12 +186,12 @@ public class Board extends Coordinate implements Enums{
 				
 				// set rook
 				PlayingBoard[rook.getPosition().getY() - 1][rook.getPosition().getX() - 1] = null;
-				rook.setPosition(new Coordinate(NewCoor.getY(), NewCoor.getX() - 1));
+				rook.setPosition(new Coordinate(NewCoor.getX() - 1, NewCoor.getY()));
 				rook.moved();
 				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 2] = rook;
 			}
 			else { // left side castle
-				rook = Board.slot(new Coordinate(1, piece.getPosition().getY()));
+				rook = (Rook)Board.slot(new Coordinate(1, piece.getPosition().getY()));
 				// set king
 				PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
 				piece.setPosition(NewCoor);
@@ -212,9 +200,25 @@ public class Board extends Coordinate implements Enums{
 				
 				// set rook
 				PlayingBoard[rook.getPosition().getY() - 1][rook.getPosition().getX() - 1] = null;
-				rook.setPosition(new Coordinate(NewCoor.getY(), NewCoor.getX() + 1));
+				rook.setPosition(new Coordinate(NewCoor.getX() + 1, NewCoor.getY()));
 				rook.moved();
 				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX()] = rook;
+			}
+		}
+		else if(piece.IsEnPassantCoordinate(NewCoor)) {
+			if(piece.color == Players.WHITE) {
+				PlayingBoard[NewCoor.getY() - 2][NewCoor.getX() - 1] = null;
+				PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
+				piece.setPosition(NewCoor);
+				piece.moved();
+				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
+			}
+			else {
+				PlayingBoard[NewCoor.getY()][NewCoor.getX() - 1] = null;
+				PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
+				piece.setPosition(NewCoor);
+				piece.moved();
+				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
 			}
 		}
 		else {
@@ -231,7 +235,10 @@ public class Board extends Coordinate implements Enums{
 	}
 	
 	public static Piece slot(Coordinate coor) {
-		return PlayingBoard[coor.getY() - 1][coor.getX() - 1];
+		return (coor.getY() > Piece.UpperLimit || 
+				coor.getX() > Piece.UpperLimit || 
+				coor.getX() < Piece.LowerLimit ||
+				coor.getY() < Piece.LowerLimit) ? null : PlayingBoard[coor.getY() - 1][coor.getX() - 1];
 	}
 	
 	private void SetUpButtons() {

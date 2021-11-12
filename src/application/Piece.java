@@ -8,6 +8,8 @@ import javafx.scene.image.Image;
 abstract class Piece implements Enums{
 	protected Image image; // Image shown in FXML
 	
+	protected int numberOfMoves;
+	
 	boolean hasMoved;
 	
 	protected Players color;
@@ -28,6 +30,7 @@ abstract class Piece implements Enums{
 		this.color = color;
 		this.ID = createRandomID();
 		this.hasMoved = false;
+		this.numberOfMoves = 0;
 	}
 	
 	public Piece(Players color, Coordinate coor) {
@@ -35,9 +38,10 @@ abstract class Piece implements Enums{
 		this.color = color;
 		this.ID = createRandomID();
 		this.hasMoved = false;
+		this.numberOfMoves = 0;
 	}
 	
-	public void moved() {this.hasMoved = true;}
+	public void moved() {this.hasMoved = true; this.numberOfMoves++;}
 	
 	public Image getImage() {return this.image;}
 	
@@ -384,6 +388,24 @@ abstract class Piece implements Enums{
 		for(int x = currentX - 1; x > LowerLimit; x--)
 			if(Board.slot(new Coordinate(x, currentY)) != null) CanCastleLeft = false;
 		return CanCastleLeft;
+	}
+	
+	public boolean IsEnPassantCoordinate(Coordinate coor) {
+		boolean contains = false;
+		List<Coordinate> coordinates;
+		Pawn pawn;
+		
+		if(this.type == Pieces.PAWN) {
+			pawn = (Pawn)this;
+			coordinates = pawn.EnPassant();
+			for(Coordinate coordinate : coordinates)
+				if(coordinate.matches(coor)) contains = true;
+			
+			if(contains)
+				return true;
+		}
+		
+		return false;
 	}
 	
 	private int createRandomID() {
