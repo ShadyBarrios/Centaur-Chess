@@ -2,11 +2,7 @@ package application;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Function;
-
-import application.Enums.Players;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public class Knight extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteKnight.png";

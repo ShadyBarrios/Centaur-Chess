@@ -3,10 +3,7 @@ package application;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-
-import application.Enums.Players;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 abstract class Piece implements Enums{
 	protected Image image; // Image shown in FXML
@@ -330,9 +327,10 @@ abstract class Piece implements Enums{
 	}
 	
 	public String toString() {
-		String str = "Color: " + color + "\nPiece: " + type + "\nCoordinates: " + currentPosition;
-		return str;
+		return "" + type;
 	}
+	
+	public boolean matches(Piece piece) {return (this.type == piece.type && this.color == piece.color);}
 	
 	public boolean isCastleCoordinate(Coordinate coor) {
 		if(this.type == Pieces.KING) {

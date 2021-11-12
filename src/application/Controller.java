@@ -15,5 +15,4 @@ public class Controller {
 		 MasterBoard.resetColor();
 		 MasterBoard.UpdateGUI();
 	}
-	
 }

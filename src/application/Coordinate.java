@@ -1,8 +1,5 @@
 package application;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class Coordinate{
 	private int x,y;
 	

@@ -3,11 +3,7 @@ package application;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
-
-import application.Enums.Players;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 
 public class Pawn extends Piece{
 	
@@ -70,11 +66,13 @@ public class Pawn extends Piece{
 		// NOTE : DISCONNECT UPPERBOUND EXCEPTION FROM LOWERBOUND EXCEPTION
 		switch(this.color){
 		case WHITE:
-			if(currentY + 1 <= UpperLimit && currentX - 1 >= LowerLimit && currentX + 1 <= UpperLimit) {
+			if(currentY + 1 <= UpperLimit && currentX + 1 <= UpperLimit) {
 				if(Board.slot(new Coordinate(currentX + 1, currentY + 1)) != null){
 					if(Board.slot(new Coordinate(currentX + 1, currentY + 1)).color != this.color)
 						coordinates.add(new Coordinate(currentX + 1, currentY + 1));
 				}
+			}
+			if(currentY + 1 <= UpperLimit && currentX - 1 >= LowerLimit) {
 				if(Board.slot(new Coordinate(currentX - 1, currentY + 1)) != null){
 					if(Board.slot(new Coordinate(currentX - 1, currentY + 1)).color != this.color)
 						coordinates.add(new Coordinate(currentX - 1, currentY + 1));
@@ -82,11 +80,13 @@ public class Pawn extends Piece{
 			}
 			break;
 		case BLACK:
-			if(currentY - 1 <= UpperLimit && currentX - 1 >= LowerLimit && currentX + 1 <= UpperLimit) {
+			if(currentY - 1 <= UpperLimit && currentX - 1 >= LowerLimit) {
 				if(Board.slot(new Coordinate(currentX - 1, currentY - 1)) != null) {
 					if(Board.slot(new Coordinate(currentX - 1, currentY - 1)).color != this.color)
 							coordinates.add(new Coordinate(currentX - 1, currentY - 1));
 				}
+			}
+			if(currentY - 1 <= UpperLimit && currentX + 1 <= UpperLimit) {
 				if(Board.slot(new Coordinate(currentX + 1, currentY - 1)) != null){
 					if(Board.slot(new Coordinate(currentX + 1, currentY - 1)).color != this.color)
 						coordinates.add(new Coordinate(currentX + 1, currentY -1));

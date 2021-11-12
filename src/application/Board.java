@@ -1,7 +1,16 @@
 package application;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.JOptionPane;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
@@ -42,6 +51,9 @@ public class Board extends Coordinate implements Enums{
 		PieceSelected = null;
 		justEliminated = false;
 		GameOver = false;
+		
+		
+		
 		turn = Players.WHITE;
 	}
 	
@@ -67,10 +79,82 @@ public class Board extends Coordinate implements Enums{
 		pieces.forEach(piece -> PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = piece);
 		UpdateConsoleDisplay();
 	}
-	private void PlayerWon(Players winner) {
+	private void PlayerWon(Players winner) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		SetMessage("WINNER: " + winner);
 		grid.setDisable(true);
+		File audioFile = new File("C:\\Users\\scott\\Downloads\\WinSound.wav");
+		AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
+		Clip clip = AudioSystem.getClip();
+		clip.open(audioStream);
+		
+		clip.start();
 		GameOver = true;
+	}
+	
+	private Piece ConstructPawnExchange(Pawn pawn) {
+		List<Piece> avaliable = EliminatedPiecesFrom(pawn.color);
+		if(avaliable.isEmpty()) {
+			JOptionPane.showMessageDialog(null, "Congrats! But you haven't lost any pieces!");
+			return null;
+		}
+		else {
+			Object[] options = new Object[avaliable.size()];
+			for(int i = 0; i < options.length; i++)
+				options[i] = avaliable.get(i).toString();
+			String choice = (String)JOptionPane.showInputDialog(null, "Congrats! Choose one of your eliminated pieces", 
+					"Pawn Exchange",JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
+			if(choice == null)
+				return null;
+			else {
+				switch(choice) {
+				case "PAWN":
+					return pawn;
+				case "QUEEN":
+					return new Queen(pawn.color, pawn.getPosition());
+				case "ROOK":
+					return new Rook(pawn.color, pawn.getPosition());
+				case "BISHOP":
+					return new Bishop(pawn.color, pawn.getPosition());
+				case "KNIGHT":
+					return new Knight(pawn.color, pawn.getPosition());
+				default:
+						return null;
+				}
+			}
+		}
+	}
+	
+	private List<Piece> EliminatedPiecesFrom(Players side){
+		List<Piece> elim = EliminatedPieces.stream().filter(piece -> (piece.color == side && piece.type != Pieces.PAWN)).toList();
+		return elim;
+	}
+	
+	private void RemoveFromEliminatedList(Piece piece) {
+		for(int i = 0; i < EliminatedPieces.size(); i++) {
+			if(EliminatedPieces.get(i).matches(piece)) {
+				EliminatedPieces.remove(i);
+				return;
+			}	
+		}
+	}
+	
+	private boolean PawnExchange(Pawn piece) {
+		if(piece.color == Players.WHITE && piece.currentPosition.getY() != Piece.UpperLimit)
+			return true;
+		else if(piece.color == Players.BLACK && piece.currentPosition.getY() != Piece.LowerLimit)
+			return true;
+		
+		Piece replacement = ConstructPawnExchange(piece);
+		if(replacement != null) {
+			replacement.moved();
+			RemoveFromEliminatedList(replacement);
+			PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = replacement;
+		}
+		else {
+			EliminatedPieces.add(piece);
+			PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
+		}
+		return true;
 	}
 	
 	public boolean MovePiece(Piece piece, Coordinate NewCoor) {
@@ -86,8 +170,20 @@ public class Board extends Coordinate implements Enums{
 			piece.moved();
 			PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
 			
-			if(EliminatedPieces.get(EliminatedPieces.size() - 1).type == Pieces.KING) 
-				PlayerWon(turn);
+			if(EliminatedPieces.get(EliminatedPieces.size() - 1).type == Pieces.KING) {
+				try {
+					PlayerWon(turn);
+				} catch (LineUnavailableException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (UnsupportedAudioFileException e) {
+					e.printStackTrace();
+				}
+			}
+			else if(piece.type == Pieces.PAWN) {
+				return PawnExchange((Pawn)piece);
+			}
 			else
 				return true;
 		}
@@ -129,6 +225,8 @@ public class Board extends Coordinate implements Enums{
 			piece.setPosition(NewCoor);
 			piece.moved();
 			PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
+			if(piece.type == Pieces.PAWN)
+				PawnExchange((Pawn)piece);
 		}
 		
 		UpdateGUI();
@@ -220,7 +318,6 @@ public class Board extends Coordinate implements Enums{
 		return null;
 	}
 	
-	private Pane getPane(Button button) {return (Pane) button.getParent();}
 	private Rectangle getColorRect(Pane pane) {return (Rectangle) pane.getChildren().get(0);}
 	private Button getButton(Pane pane) {return (Button) pane.getChildren().get(1);}
 	private ImageView getImageView(Pane pane) {return (ImageView) pane.getChildren().get(2);}
