@@ -338,12 +338,14 @@ abstract class Piece implements Enums{
 	
 	public boolean isCastleCoordinate(Coordinate coor) {
 		if(this.type == Pieces.KING) {
-			if(CanCastleRight())
+			if(CanCastleRight()) {
 				if(coor.matches(new Coordinate(this.currentPosition.getX() + 2, this.currentPosition.getY())))
 					return true;
-			if(CanCastleLeft())
+			}
+			if(CanCastleLeft()) {
 				if(coor.matches(new Coordinate(this.currentPosition.getX() - 2, this.currentPosition.getY())))
 					return true;
+			}
 		}
 		return false;
 	}
