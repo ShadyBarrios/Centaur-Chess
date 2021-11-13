@@ -10,10 +10,7 @@ public class Pawn extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhitePawn.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackPawn.png";
 	
-	// if white is parallel with black after black is on 2nd row from base, white can take black diagonally
-	// vice versa with white
-	
-	//en passant
+	List<Integer> bannedPawns;
 	
 	@Override
 	protected void ConstructRest() {
@@ -21,6 +18,7 @@ public class Pawn extends Piece{
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 		this.thickness = Thickness.THICK;
 		this.numberOfMoves = 0;
+		bannedPawns = new ArrayList<Integer>();
 	}
 	
 	public Pawn(Players type, int x, int y) {
@@ -33,6 +31,10 @@ public class Pawn extends Piece{
 		ConstructRest();
 	}
 	
+	public Pawn(Players type) {
+		image = (type == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+	}
+
 	@Override
 	public String getInitial() {return "P";}
 
@@ -75,34 +77,47 @@ public class Pawn extends Piece{
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		int currentX = currentPosition.getX();
 		int currentY = currentPosition.getY();
+		Piece piece;
 		
 		// NOTE : DISCONNECT UPPERBOUND EXCEPTION FROM LOWERBOUND EXCEPTION
 		switch(this.color){
 		case WHITE:
 			if(currentY + 1 <= UpperLimit && currentX + 1 <= UpperLimit) {
 				if(Board.slot(new Coordinate(currentX + 1, currentY + 1)) != null){
-					if(Board.slot(new Coordinate(currentX + 1, currentY + 1)).color != this.color)
+					piece = Board.slot(new Coordinate(currentX + 1, currentY + 1));
+					if(piece.color != this.color)
 						coordinates.add(new Coordinate(currentX + 1, currentY + 1));
+					if(piece.type == Pieces.PAWN)
+						bannedPawns.add(piece.ID);
 				}
 			}
 			if(currentY + 1 <= UpperLimit && currentX - 1 >= LowerLimit) {
 				if(Board.slot(new Coordinate(currentX - 1, currentY + 1)) != null){
-					if(Board.slot(new Coordinate(currentX - 1, currentY + 1)).color != this.color)
+					piece = Board.slot(new Coordinate(currentX - 1, currentY + 1));
+					if(piece.color != this.color)
 						coordinates.add(new Coordinate(currentX - 1, currentY + 1));
+					if(piece.type == Pieces.PAWN)
+						bannedPawns.add(piece.ID);
 				}
 			}
 			break;
 		case BLACK:
 			if(currentY - 1 <= UpperLimit && currentX - 1 >= LowerLimit) {
 				if(Board.slot(new Coordinate(currentX - 1, currentY - 1)) != null) {
-					if(Board.slot(new Coordinate(currentX - 1, currentY - 1)).color != this.color)
-							coordinates.add(new Coordinate(currentX - 1, currentY - 1));
+					piece = Board.slot(new Coordinate(currentX - 1, currentY - 1));
+					if(piece.color != this.color)
+						coordinates.add(new Coordinate(currentX - 1, currentY - 1));
+					if(piece.type == Pieces.PAWN)
+						bannedPawns.add(piece.ID);
 				}
 			}
 			if(currentY - 1 <= UpperLimit && currentX + 1 <= UpperLimit) {
 				if(Board.slot(new Coordinate(currentX + 1, currentY - 1)) != null){
-					if(Board.slot(new Coordinate(currentX + 1, currentY - 1)).color != this.color)
+					piece = Board.slot(new Coordinate(currentX + 1, currentY - 1));
+					if(piece.color != this.color)
 						coordinates.add(new Coordinate(currentX + 1, currentY -1));
+					if(piece.type == Pieces.PAWN)
+						bannedPawns.add(piece.ID);
 				}
 			}
 			break;
@@ -124,14 +139,14 @@ public class Pawn extends Piece{
 				if(currentX < UpperLimit) {
 					piece = Board.slot(new Coordinate(currentX + 1, currentY));
 					if(piece != null) {
-						if(piece.type == Pieces.PAWN && piece.color != this.color)
+						if(piece.type == Pieces.PAWN && piece.color != this.color && !bannedPawns.contains(piece.ID))
 							coordinates.add(new Coordinate(currentX + 1, currentY + 1));
 					}
 				}
 				if(currentX > LowerLimit) {
 					piece = Board.slot(new Coordinate(currentX - 1, currentY));
 					if(piece != null) {
-						if(piece.type == Pieces.PAWN && piece.color != this.color)
+						if(piece.type == Pieces.PAWN && piece.color != this.color && !bannedPawns.contains(piece.ID))
 							coordinates.add(new Coordinate(currentX - 1, currentY + 1));
 					}
 				}
@@ -142,14 +157,14 @@ public class Pawn extends Piece{
 				if(currentX < UpperLimit) {
 					piece = Board.slot(new Coordinate(currentX + 1, currentY));
 					if(piece != null) {
-						if(piece.type == Pieces.PAWN && piece.color != this.color && piece.numberOfMoves <= 1)
+						if(piece.type == Pieces.PAWN && piece.color != this.color && piece.numberOfMoves <= 1 && !bannedPawns.contains(piece.ID))
 							coordinates.add(new Coordinate(currentX + 1, currentY - 1));
 					}
 				}
 				if(currentX > LowerLimit) {
 					piece = Board.slot(new Coordinate(currentX - 1, currentY));
 					if(piece != null) {
-						if(piece.type == Pieces.PAWN && piece.color != this.color && piece.numberOfMoves <= 1)
+						if(piece.type == Pieces.PAWN && piece.color != this.color && piece.numberOfMoves <= 1 && !bannedPawns.contains(piece.ID))
 							coordinates.add(new Coordinate(currentX - 1, currentY - 1));
 					}
 				}

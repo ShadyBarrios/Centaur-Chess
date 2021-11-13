@@ -2,6 +2,7 @@ package application;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.scene.image.Image;
 
 public class Rook extends Piece{
@@ -26,6 +27,10 @@ public class Rook extends Piece{
 	}
 	
 	
+	public Rook(Players type) {
+		image = (type == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+	}
+
 	@Override
 	public String getInitial() {return "R";}
 

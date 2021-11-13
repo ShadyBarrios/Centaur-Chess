@@ -14,7 +14,9 @@ import javax.swing.JOptionPane;
 
 import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
+import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
@@ -26,6 +28,8 @@ public class Board extends Coordinate implements Enums{
 	private String[][] PlayingBoardDisplay;
 	public static Piece[][] PlayingBoard;
 	private Pane[][] PlayingBoardPane;
+	private Pane[] BlackElim;
+	private Pane[] WhiteElim;
 	public static Players turn;
 	private Piece PieceSelected;
 	private final Paint BLUE = Paint.valueOf("#49d6e9"), GREEN = Paint.valueOf("#75c367"), WHITE = Paint.valueOf("#ffffff");
@@ -39,6 +43,8 @@ public class Board extends Coordinate implements Enums{
 		PlayingBoardDisplay = new String[8][8];
 		PlayingBoard = new Piece[8][8];
 		PlayingBoardPane = new Pane[8][8];
+		BlackElim = new Pane[5];
+		WhiteElim = new Pane[5];
 		EliminatedPieces = new ArrayList<Piece>();
 		
 		for(int y = 0; y < Piece.UpperLimit; y++) {
@@ -48,6 +54,12 @@ public class Board extends Coordinate implements Enums{
 				PlayingBoardDisplay[y][x] = "-";
 			}
 		}
+		
+		for(int y = 0; y < 5; y++) {
+			BlackElim[y] = null;
+			WhiteElim[y] = null;
+		}
+		
 		PieceSelected = null;
 		justEliminated = false;
 		GameOver = false;
@@ -59,13 +71,21 @@ public class Board extends Coordinate implements Enums{
 		addAll(pieces);	
 	}
 	
-	public Board(List<Piece> pieces, GridPane grid, TextField Messenger) {
+	public Board(List<Piece> pieces, GridPane grid, TextField Messenger, GridPane blackElim, GridPane whiteElim) {
 		this(pieces);
 		for(int y = 1; y <= 8; y++) {
 			for(int x = 1; x <= 8; x++) {
 				PlayingBoardPane[y - 1][x - 1] = (Pane) grid.getChildren().get(new Coordinate(x, y).toPaneCoordinate());
 			}
 		}
+		
+		for(int y = 0; y < 5; y++) {
+			BlackElim[y] = (Pane) blackElim.getChildren().get(y);
+			WhiteElim[y] = (Pane) whiteElim.getChildren().get(y);
+		}
+		
+		UpdateBlackElim();
+		UpdateWhiteElim();
 		SetUpButtons();
 		this.grid = grid;
 		this.Messenger = Messenger;
@@ -76,6 +96,7 @@ public class Board extends Coordinate implements Enums{
 		pieces.forEach(piece -> PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = piece);
 		UpdateConsoleDisplay();
 	}
+	
 	private void PlayerWon(Players winner) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		SetMessage("WINNER: " + winner);
 		grid.setDisable(true);
@@ -131,15 +152,10 @@ public class Board extends Coordinate implements Enums{
 			return true;
 		
 		Piece replacement = ConstructPawnExchange(piece);
-		if(replacement != null) {
-			replacement.moved();
-			PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = replacement;
-		}
-		else {
-			EliminatedPieces.add(piece);
-			PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
-		}
+		PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = (replacement == null) ? null : replacement;
+		EliminatedPieces.add(piece);
 		return true;
+		
 	}
 	
 	public boolean MovePiece(Piece piece, Coordinate NewCoor) {
@@ -175,51 +191,27 @@ public class Board extends Coordinate implements Enums{
 		
 		if(piece.isCastleCoordinate(NewCoor)) {
 			Piece rook;
-			// right side castle
-			if(NewCoor.getX() > piece.currentPosition.getX()) {
-				rook = (Rook)Board.slot(new Coordinate(8, piece.getPosition().getY()));
-				// set king
-				PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
-				piece.setPosition(NewCoor);
-				piece.moved();
-				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
-				
-				// set rook
-				PlayingBoard[rook.getPosition().getY() - 1][rook.getPosition().getX() - 1] = null;
-				rook.setPosition(new Coordinate(NewCoor.getX() - 1, NewCoor.getY()));
-				rook.moved();
-				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 2] = rook;
-			}
-			else { // left side castle
-				rook = (Rook)Board.slot(new Coordinate(1, piece.getPosition().getY()));
-				// set king
-				PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
-				piece.setPosition(NewCoor);
-				piece.moved();
-				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
-				
-				// set rook
-				PlayingBoard[rook.getPosition().getY() - 1][rook.getPosition().getX() - 1] = null;
-				rook.setPosition(new Coordinate(NewCoor.getX() + 1, NewCoor.getY()));
-				rook.moved();
-				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX()] = rook;
-			}
+			// ? is right side castle, : is left side castle
+			rook = (Rook)Board.slot(new Coordinate(NewCoor.getX() > piece.currentPosition.getX() ? 8 : 1, piece.getPosition().getY()));
+			// set rook
+			PlayingBoard[rook.getPosition().getY() - 1][rook.getPosition().getX() - 1] = null;
+			rook.setPosition(new Coordinate((NewCoor.getX() > piece.currentPosition.getX()) ? NewCoor.getX() - 1 : NewCoor.getX() + 1, NewCoor.getY()));
+			rook.moved();
+			PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() > piece.currentPosition.getX() ? NewCoor.getX() - 2 : NewCoor.getX()] = rook;
+			// set king
+			PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
+			piece.setPosition(NewCoor);
+			piece.moved();
+			PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
+			
 		}
 		else if(piece.IsEnPassantCoordinate(NewCoor)) {
-			if(piece.color == Players.WHITE) {
-				PlayingBoard[NewCoor.getY() - 2][NewCoor.getX() - 1] = null;
-				PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
-				piece.setPosition(NewCoor);
-				piece.moved();
-				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
-			}
-			else {
-				PlayingBoard[NewCoor.getY()][NewCoor.getX() - 1] = null;
-				PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
-				piece.setPosition(NewCoor);
-				piece.moved();
-				PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
-			}
+			EliminatedPieces.add(PlayingBoard[(piece.color == Players.WHITE) ? NewCoor.getY() - 2 : NewCoor.getY()][NewCoor.getX() - 1]);
+			PlayingBoard[(piece.color == Players.WHITE) ? NewCoor.getY() - 2 : NewCoor.getY()][NewCoor.getX() - 1] = null;
+			PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
+			piece.setPosition(NewCoor);
+			piece.moved();
+			PlayingBoard[NewCoor.getY() - 1][NewCoor.getX() - 1] = piece;
 		}
 		else {
 			PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = null;
@@ -229,8 +221,6 @@ public class Board extends Coordinate implements Enums{
 			if(piece.type == Pieces.PAWN && !GameOver)
 				PawnExchange((Pawn)piece);
 		}
-		
-		UpdateGUI();
 		return false;
 	}
 	
@@ -325,15 +315,13 @@ public class Board extends Coordinate implements Enums{
 	private Rectangle getColorRect(Pane pane) {return (Rectangle) pane.getChildren().get(0);}
 	private Button getButton(Pane pane) {return (Button) pane.getChildren().get(1);}
 	private ImageView getImageView(Pane pane) {return (ImageView) pane.getChildren().get(2);}
+	private ImageView getImageViewElim(Pane pane) {return (ImageView)pane.getChildren().get(0);}
+	private Label getLabel(Pane pane) {return (Label)pane.getChildren().get(1);}
 	
 	private void UpdateConsoleDisplay() {
 		for(int y = 0; y < Piece.UpperLimit; y++) {
-			for(int x = 0; x < Piece.UpperLimit; x++) {
-				if(PlayingBoard[y][x] != null)
-					PlayingBoardDisplay[y][x] = PlayingBoard[y][x].getInitial();
-				else
-					PlayingBoardDisplay[y][x] = "-";
-			}
+			for(int x = 0; x < Piece.UpperLimit; x++) 
+				PlayingBoardDisplay[y][x] = (PlayingBoard[y][x] != null) ? PlayingBoard[y][x].getInitial() : "-";
 		}
 	}
 	
@@ -350,8 +338,70 @@ public class Board extends Coordinate implements Enums{
 					imgView.setLayoutX((PlayingBoard[y][x].thickness == Thickness.THICK) ? 15 : (PlayingBoard[y][x].type == Pieces.KING ? 20 : 18) );
 			}
 		}
+		if(invertColor(turn) == Players.WHITE)
+			UpdateWhiteElim();
+		else
+			UpdateBlackElim();
 	}
 	
+	private void UpdateBlackElim() {
+		Pane pane;
+		ImageView imgView;
+		Label label;
+		Image image;
+		int killCount;
+		
+		for(int y = 0; y < 5; y++) {
+			pane = BlackElim[y];
+			imgView = getImageViewElim(pane);
+			label = getLabel(pane);
+
+			image = getImage(y, Players.BLACK);
+			killCount = getKillCount(getType(y), Players.BLACK);
+			label.setText("" + killCount);
+			imgView.setImage(image);
+		}
+	}
+	
+	private Image getImage(int y, Players type) {
+		if(y == 0) return (new Pawn(type).getImage());
+		else if(y == 1) return (new Queen(type).getImage());
+		else if(y == 2) return (new Knight(type).getImage());
+		else if(y == 3) return (new Bishop(type).getImage());
+		else return (new Rook(type).getImage());
+	}
+	
+	private Pieces getType(int y) {
+		if(y == 0) return Pieces.PAWN;
+		else if(y == 1) return Pieces.QUEEN;
+		else if(y == 2) return Pieces.KNIGHT;
+		else if(y == 3) return Pieces.BISHOP;
+		else return Pieces.ROOK;
+	}
+	
+	private int getKillCount(Pieces type, Players color) {
+		return (int)EliminatedPieces.stream().filter(piece -> (piece.color == color && piece.type == type)).count();
+	}
+
+	private void UpdateWhiteElim() {
+		Pane pane;
+		ImageView imgView;
+		Label label;
+		Image image;
+		int killCount;
+		
+		for(int y = 0; y < 5; y++) {
+			pane = WhiteElim[y];
+			imgView = getImageViewElim(pane);
+			label = getLabel(pane);
+
+			image = getImage(y, Players.WHITE);
+			killCount = getKillCount(getType(y), Players.WHITE);
+			label.setText("" + killCount);
+			imgView.setImage(image);
+		}
+	}
+
 	public void resetColor() {
 		// start first as white
 		Pane pane = PlayingBoardPane[0][0];
@@ -365,24 +415,12 @@ public class Board extends Coordinate implements Enums{
 				pane = PlayingBoardPane[y][x];
 				colorRect = getColorRect(pane);
 				if(lastWhite) {
-					if(i % 8 == 0) {
-						colorRect.setFill(WHITE);
-						lastWhite = true;
-					}
-					else {
-						colorRect.setFill(GREEN);
-						lastWhite = false;
-					}
+					colorRect.setFill( (i % 8 == 0) ? WHITE : GREEN);
+					lastWhite = (i % 8 == 0) ? true : false;
 				}
 				else {
-					if(i % 8 == 0) {
-						colorRect.setFill(GREEN);
-						lastWhite = false;
-					}
-					else {
-						colorRect.setFill(WHITE);
-						lastWhite = true;
-					}
+					colorRect.setFill( (i % 8 == 0) ? GREEN : WHITE);
+					lastWhite = (i % 8 == 0) ? false : true;
 				}
 				i++;
 			}
@@ -398,6 +436,10 @@ public class Board extends Coordinate implements Enums{
 	
 	public Rectangle getColorRectangleAt(Coordinate coor) {
 		return (Rectangle)PlayingBoardPane[coor.getY() - 1][coor.getX() - 1].getChildren().get(0);
+	}
+	
+	private Players invertColor(Players turn) {
+		return (turn == Players.WHITE) ? Players.BLACK : Players.WHITE; 
 	}
 	
 	private void ChangeTurn() {

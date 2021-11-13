@@ -6,13 +6,14 @@ import javafx.scene.layout.GridPane;
 
 public class Controller {
 	@FXML
-	private GridPane ChessBoard;
+	private GridPane ChessBoard, BlackElim, WhiteElim;
 	@FXML
 	private TextField Messenger;
 	
 	public void initialize() {
-		 Board MasterBoard = new Board(Piece.CreatePieces(), ChessBoard, Messenger);
+		 Board MasterBoard = new Board(Piece.CreatePieces(), ChessBoard, Messenger, BlackElim, WhiteElim);
 		 MasterBoard.resetColor();
 		 MasterBoard.UpdateGUI();
+		 
 	}
 }

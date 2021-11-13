@@ -2,6 +2,7 @@ package application;
 
 import java.util.ArrayList;
 import java.util.List;
+
 import javafx.scene.image.Image;
 
 public class Knight extends Piece{
@@ -25,6 +26,10 @@ public class Knight extends Piece{
 		ConstructRest();
 	}
 	
+	public Knight(Players type) {
+		image = (type == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+	}
+
 	@Override
 	public String getInitial() {return "N";}
 

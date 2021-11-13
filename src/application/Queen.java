@@ -25,6 +25,10 @@ public class Queen extends Piece{
 		ConstructRest();
 	}
 	
+	public Queen(Players type) {
+		image = (type == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+	}
+	
 	@Override
 	public String getInitial() {return "Q";}
 	
