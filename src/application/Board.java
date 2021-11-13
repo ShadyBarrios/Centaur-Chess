@@ -111,7 +111,7 @@ public class Board extends Coordinate implements Enums{
 	
 	private Piece ConstructPawnExchange(Pawn pawn) {
 		Object[] options = {"QUEEN", "BISHOP", "ROOK", "KNIGHT"};
-		String choice = (String)JOptionPane.showInputDialog(null, "Congrats! Choose one of your eliminated pieces", 
+		String choice = (String)JOptionPane.showInputDialog(null, "Congrats! Choose a replacement piece", 
 				"Pawn Exchange",JOptionPane.PLAIN_MESSAGE, null, options, options[0]);
 		if(choice == null)
 			return null;
