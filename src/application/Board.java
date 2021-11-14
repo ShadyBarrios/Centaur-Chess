@@ -4,6 +4,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import javax.sound.sampled.AudioInputStream;
 import javax.sound.sampled.AudioSystem;
@@ -16,6 +18,7 @@ import javafx.event.ActionEvent;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
+import javafx.scene.text.Text;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.input.MouseEvent;
@@ -34,10 +37,13 @@ public class Board extends Coordinate implements Enums{
 	private Piece PieceSelected;
 	private final Paint BLUE = Paint.valueOf("#49d6e9"), GREEN = Paint.valueOf("#75c367"), WHITE = Paint.valueOf("#ffffff");
 	private List<Piece> EliminatedPieces;
-	private TextField Messenger;
+	public TextField Messenger;
+	public Text DisplayBlackTimer, DisplayWhiteTimer;
 	private boolean justEliminated;
 	private boolean GameOver;
 	private GridPane grid;
+	private static ChessTimer BlackTimer, WhiteTimer, CountdownTimer;
+	private static Timer RealBlackTimer, RealWhiteTimer, RealCountdownTimer;
 	
 	public Board() {
 		PlayingBoardDisplay = new String[8][8];
@@ -71,7 +77,7 @@ public class Board extends Coordinate implements Enums{
 		addAll(pieces);	
 	}
 	
-	public Board(List<Piece> pieces, GridPane grid, TextField Messenger, GridPane blackElim, GridPane whiteElim) {
+	public Board(List<Piece> pieces, GridPane grid, TextField Messenger, GridPane blackElim, GridPane whiteElim, Text GUIB, Text GUIW, long TimeWanted) {
 		this(pieces);
 		for(int y = 1; y <= 8; y++) {
 			for(int x = 1; x <= 8; x++) {
@@ -84,12 +90,24 @@ public class Board extends Coordinate implements Enums{
 			WhiteElim[y] = (Pane) whiteElim.getChildren().get(y);
 		}
 		
+		this.DisplayBlackTimer = GUIB;
+		this.DisplayWhiteTimer = GUIW;
+		
 		UpdateBlackElim();
 		UpdateWhiteElim();
 		SetUpButtons();
 		this.grid = grid;
 		this.Messenger = Messenger;
+		
 		SetMessage(turn + " Player Turn");
+		
+		if(TimeWanted != -1) {
+			CountdownTimer = new ChessTimer(7000, Players.WHITE, TimeWanted * 1000); // seconds to milliseconds
+			RealCountdownTimer = new Timer(); 
+			RealCountdownTimer.schedule(CountdownTimer, 0, 1000);
+
+			grid.setDisable(true);
+		}
 	}
 	
 	public void addAll(List<Piece> pieces) {
@@ -104,6 +122,12 @@ public class Board extends Coordinate implements Enums{
 		AudioInputStream audioStream = AudioSystem.getAudioInputStream(audioFile);
 		Clip clip = AudioSystem.getClip();
 		clip.open(audioStream);
+		
+		if(RealBlackTimer != null) {
+			RealBlackTimer.cancel();
+			RealWhiteTimer.cancel(); // if one is null, both are null
+		}
+			
 		
 		clip.start();
 		GameOver = true;
@@ -448,6 +472,112 @@ public class Board extends Coordinate implements Enums{
 	
 	public void SetMessage(String string) {
 		Messenger.setText(string);
+	}
+	
+	class ChessTimer extends TimerTask{
+		private long remainingTime;
+		private Players player;
+		private long allottedTime;
+		private long TimeWanted;
+		private int times;
+		
+		public ChessTimer(long allottedTime, Players player) {
+			this.allottedTime = allottedTime;
+			this.remainingTime = allottedTime;
+			this.player = player;
+			times = 0;
+		}
+		
+		public ChessTimer(long allottedTime, Players player, long TimeWanted) {
+			this.allottedTime = allottedTime;
+			this.remainingTime = allottedTime;
+			this.player = player;
+			this.TimeWanted = TimeWanted;
+			times = 0;
+		}
+		
+		@Override
+		public void run() {
+			if(allottedTime == 7000) {
+				long remainingTime = getRemainingTime();
+				if(remainingTime <= 0 && times == 0) {
+					// 1000 -> 1 sec 
+					// 60 * 1 sec -> 1 min -> 60,000
+					// 10 * 1 min -> 10 mins -> 600,000
+					++times;
+					
+					BlackTimer = new ChessTimer(TimeWanted, Players.BLACK);
+					RealBlackTimer = new Timer();
+					RealBlackTimer.schedule(BlackTimer, 0, 1000);
+					
+					WhiteTimer = new ChessTimer(TimeWanted, Players.WHITE);
+					RealWhiteTimer = new Timer();
+					RealWhiteTimer.schedule(WhiteTimer, 0, 1000);
+					
+					SetMessage(turn + " Player Turn");
+					
+					grid.setDisable(false);
+					
+					RealCountdownTimer.cancel();
+				}
+				String message = "" + remainingTime;
+				if(allottedTime == 7000 && times == 0) {
+					SetMessage("GAME STARTS IN " + message);
+					if(DisplayBlackTimer != null)
+						DisplayBlackTimer.setText(toMinute(toSecond(this.TimeWanted)));
+					if(DisplayWhiteTimer != null)
+						DisplayWhiteTimer.setText(toMinute(toSecond(this.TimeWanted)));
+				}
+				return;
+			}
+			
+			if(player == turn) {
+				String message = toMinute(getRemainingTime());
+				try {
+					if(player == Players.BLACK) {
+						DisplayBlackTimer.setText("");
+						DisplayBlackTimer.setText(message);
+					}
+					else if(player == Players.WHITE){
+						DisplayWhiteTimer.setText("");
+						DisplayWhiteTimer.setText(message);
+					}
+				}
+				catch(NullPointerException e) {
+					getRemainingTime();
+					return;
+				}
+				
+			}
+				
+			if(remainingTime <= 0) {
+				try {
+					PlayerWon(turn);
+				} catch (LineUnavailableException | IOException | UnsupportedAudioFileException e) {
+					e.printStackTrace();
+				}
+			}
+		}
+		
+		private long toSecond(long milli) {
+			return milli / 1000;
+		}
+		
+		private String toMinute(long timeInSec) {
+			long minutes = timeInSec / 60;
+			return Format(minutes) + " : " + Format(timeInSec - (minutes * 60));
+		}
+		
+		private long getRemainingTime() {
+			this.remainingTime -= 1000;
+			return this.remainingTime / 1000;
+		}
+		
+		private String Format(long time) {
+			String Time = "" + time;
+			return ((Time.length() == 1) ? "0" + Time : Time);
+		}
+		
 	}
 	
 	public String toString() {
