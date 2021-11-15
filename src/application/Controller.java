@@ -7,7 +7,8 @@ import javafx.scene.text.Text;
 
 /**
  * Class defined as controller for Javafx application. Hands all control to Board.java
- * @author Shady
+ * @author Shady 
+ * 
  */
 
 public class Controller {

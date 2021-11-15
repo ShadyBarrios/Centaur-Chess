@@ -7,8 +7,10 @@ import javafx.scene.image.Image;
 
 /**
  * Class representing a Rook chess piece
- * @author Shady
+ * @author Shady 
+ * 
  */
+
 public class Rook extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteRook.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackRook.png";

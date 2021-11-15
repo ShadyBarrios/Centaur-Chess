@@ -383,7 +383,7 @@ abstract class Piece implements Enums{
 		 */
 		
 		for(int xManip = -1; xManip <= 1; xManip++) {
-			if(currentX + xManip >= LowerLimit && currentX + xManip <= yManip) { 
+			if(currentX + xManip >= LowerLimit && currentX + xManip <= UpperLimit) { 
 				coordinates.add(new Coordinate(currentX + xManip, currentY + yManip));
 				if(Board.slot(new Coordinate(currentX + xManip, currentY + yManip)) != null 
 						&& Board.slot(new Coordinate(currentX + xManip, currentY + yManip)).color == this.color)

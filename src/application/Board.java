@@ -82,6 +82,7 @@ public class Board extends Coordinate implements Enums{
 	}
 	
 	/**
+	 * Uses the 0-arg constructor and {@link #addAll(List)}
 	 * @param pieces - A full set of pieces.
 	 */
 	public Board(List<Piece> pieces) {
@@ -125,7 +126,7 @@ public class Board extends Coordinate implements Enums{
 		SetMessage(turn + " Player Turn");
 		
 		if(TimeWanted != -1) {
-			CountdownTimer = new ChessTimer(7000, Players.WHITE, TimeWanted * 1000); // seconds to milliseconds
+			CountdownTimer = new ChessTimer(7000, TimeWanted * 1000); // seconds to milliseconds
 			RealCountdownTimer = new Timer(); 
 			RealCountdownTimer.schedule(CountdownTimer, 0, 1000);
 
@@ -133,11 +134,22 @@ public class Board extends Coordinate implements Enums{
 		}
 	}
 	
+	/**
+	 * Adds all the freshly created pieces to the literal playing board 
+	 * @param pieces - the pieces created by the Piece createPieces static method
+	 */
 	public void addAll(List<Piece> pieces) {
 		pieces.forEach(piece -> PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = piece);
 		UpdateConsoleDisplay();
 	}
 	
+	/**
+	 * Plays the CR winner music, cancels all the timers if set, and disables the panel
+	 * @param winner - The winner of the game
+	 * @throws LineUnavailableException
+	 * @throws IOException
+	 * @throws UnsupportedAudioFileException
+	 */
 	private void PlayerWon(Players winner) throws LineUnavailableException, IOException, UnsupportedAudioFileException {
 		SetMessage("WINNER: " + winner);
 		grid.setDisable(true);
@@ -156,6 +168,11 @@ public class Board extends Coordinate implements Enums{
 		GameOver = true;
 	}
 	
+	/**
+	 * Constructs a JOptionPane that allows the player to choose a piece to replace the pawn with.
+	 * @param pawn - The pawn that will be replaced
+	 * @return The replacement piece with the same coordinates as the pawn
+	 */
 	private Piece ConstructPawnExchange(Pawn pawn) {
 		Object[] options = {"QUEEN", "BISHOP", "ROOK", "KNIGHT"};
 		String choice = (String)JOptionPane.showInputDialog(null, "Congrats! Choose a replacement piece", 
@@ -178,20 +195,12 @@ public class Board extends Coordinate implements Enums{
 		}
 	}
 	
-//	private List<Piece> EliminatedPiecesFrom(Players side){
-//		List<Piece> elim = EliminatedPieces.stream().filter(piece -> (piece.color == side && piece.type != Pieces.PAWN)).toList();
-//		return elim;
-//	}
-//	
-//	private void RemoveFromEliminatedList(Piece piece) {
-//		for(int i = 0; i < EliminatedPieces.size(); i++) {
-//			if(EliminatedPieces.get(i).matches(piece)) {
-//				EliminatedPieces.remove(i);
-//				return;
-//			}	
-//		}
-//	}
-	
+	/**
+	 * Uses the {@link #ConstructPawnExchange(pawn)} to create a replacement piece. The replacement piece is put on the literal board.
+	 * The pawn is added to the {@link #EliminatedPieces}.
+	 * @param piece
+	 * @return True regardless. However, it skips the process if the pawn hasn't reached the appropriate row.
+	 */
 	private boolean PawnExchange(Pawn piece) {
 		if(piece.color == Players.WHITE && piece.currentPosition.getY() != Piece.UpperLimit)
 			return true;
@@ -202,9 +211,19 @@ public class Board extends Coordinate implements Enums{
 		PlayingBoard[piece.getPosition().getY() - 1][piece.getPosition().getX() - 1] = (replacement == null) ? null : replacement;
 		EliminatedPieces.add(piece);
 		return true;
-		
 	}
 	
+	/**
+	 * There are 5 outcomes when a piece is trying to be moved.
+	 * 1) The tile selected is not an available option.
+	 * 2) The tile selected is vacant and no swapping needs to take place
+	 * 3) The move intended is a castle move
+	 * 4) The move intended is an en passant move
+	 * 5) No special move is requested but the tile isn't vacant, requiring a swap.
+	 * @param piece - The piece that will be moved
+	 * @param NewCoor - The coordinate the piece will be moved to.
+	 * @return True if the coordinate is an available coordinate. False if the coordinate isn't.
+	 */
 	public boolean MovePiece(Piece piece, Coordinate NewCoor) {
 		
 		if(!piece.isOnLine(NewCoor)) {
@@ -271,6 +290,11 @@ public class Board extends Coordinate implements Enums{
 		return false;
 	}
 	
+	/**
+	 * Can be used to peek into the literal board.
+	 * @param coor - The coordinate that the piece will be extracted from
+	 * @return The piece on located at coor on the literal board. Returns null if the coordinate is out of bounds or if the piece doesn't exist.
+	 */
 	public static Piece slot(Coordinate coor) {
 		return (coor.getY() > Piece.UpperLimit || 
 				coor.getX() > Piece.UpperLimit || 
@@ -278,6 +302,9 @@ public class Board extends Coordinate implements Enums{
 				coor.getY() < Piece.LowerLimit) ? null : PlayingBoard[coor.getY() - 1][coor.getX() - 1];
 	}
 	
+	/**
+	 * Adds button listeners to the image of the pieces and the buttons in every panel
+	 */
 	private void SetUpButtons() {
 		Button but;
 		for(int y = 0; y < Piece.UpperLimit; y++) {
@@ -295,18 +322,34 @@ public class Board extends Coordinate implements Enums{
 		}
 	}
 	
+	/**
+	 * Whenever a button is clicked, {@link #ButtonAction(Pane)} is triggered
+	 * @param e - the ActionEvent
+	 */
 	private void ButtonActionWanted(ActionEvent e) {
 		Button but = (Button)e.getTarget();
 		Pane pane = (Pane)but.getParent();
 		ButtonAction(pane);
 	}
 	
+	/**
+	 * Whenever an image is clicked, {@link #ButtonAction(Pane)} is triggered
+	 * @param e - the MouseEvent 
+	 */
 	private void ButtonActionWanted(MouseEvent e) {
 		ImageView but = (ImageView)e.getTarget();
 		Pane pane = (Pane)but.getParent();
 		ButtonAction(pane);
 	}
 	
+	/**
+	 * Decides what to do after a tile has been clicked. 
+	 * If a piece has already been picked, 
+	 * it'll be decided if the tile selected is a valid move or if a new piece is being selected.
+	 * Otherwise, itll decide whether or not the piece selected is of the right player (during appropriate turn).
+	 * If the user clicks and empty tile when no piece has been previously selected, nothing will happen.
+	 * @param pane - The tile that was clicked
+	 */
 	private void ButtonAction(Pane pane) {
 		Coordinate location = GetPaneCoordinate(pane);
 		Piece piece = slot(location);
@@ -348,7 +391,11 @@ public class Board extends Coordinate implements Enums{
 			justEliminated = false;
 	}
 	
-	
+	/**
+	 * Get the coordinate of a tile on the visual
+	 * @param pane - The tile on the visual grid
+	 * @return The coordinate of the tile
+	 */
 	private Coordinate GetPaneCoordinate(Pane pane) {
 		for(int y = 0; y < 8; y++) {
 			for(int x = 0; x < 8; x++) {
@@ -359,12 +406,43 @@ public class Board extends Coordinate implements Enums{
 		return null;
 	}
 	
+	/**
+	 * Rectangles (tiles) have an index of 0 in a board pane's child list
+	 * @param pane - The pane selected
+	 * @return The Rectangle (tile) contained within the pane
+	 */
 	private Rectangle getColorRect(Pane pane) {return (Rectangle) pane.getChildren().get(0);}
+	
+	/**
+	 * Buttons have an index of 1 in a board pane's child list
+	 * @param pane - The pane selected
+	 * @return The button contained within the pane
+	 */
 	private Button getButton(Pane pane) {return (Button) pane.getChildren().get(1);}
+	
+	/**
+	 * ImageViews have an index of 2 in a board pane's child list
+	 * @param pane - The pane selected
+	 * @return The ImageView contained within the pane
+	 */
 	private ImageView getImageView(Pane pane) {return (ImageView) pane.getChildren().get(2);}
+	
+	/**
+	 * ImageViews have an index of 0 in an Eliminated Piece pane's child list
+	 * @param pane - The pane in the eliminated list that will be updated
+	 * @return The ImageView contained within the pane.
+	 */
 	private ImageView getImageViewElim(Pane pane) {return (ImageView)pane.getChildren().get(0);}
+	/**
+	 * Labels have an index of 1 in an Eliminated Piece pane's child list
+	 * @param pane - The pane in the eliminated list that will be updated.
+	 * @return The label contained within the pane.
+	 */
 	private Label getLabel(Pane pane) {return (Label)pane.getChildren().get(1);}
 	
+	/**
+	 * Updates the console version of the literal board.
+	 */
 	private void UpdateConsoleDisplay() {
 		for(int y = 0; y < Piece.UpperLimit; y++) {
 			for(int x = 0; x < Piece.UpperLimit; x++) 
@@ -372,6 +450,9 @@ public class Board extends Coordinate implements Enums{
 		}
 	}
 	
+	/**
+	 * Update the visual board.
+	 */
 	public void UpdateGUI() {
 		Pane pane;
 		ImageView imgView;
@@ -391,6 +472,9 @@ public class Board extends Coordinate implements Enums{
 			UpdateBlackElim();
 	}
 	
+	/**
+	 * Updates the visual list of the eliminated black pieces
+	 */
 	private void UpdateBlackElim() {
 		Pane pane;
 		ImageView imgView;
@@ -410,14 +494,31 @@ public class Board extends Coordinate implements Enums{
 		}
 	}
 	
-	private Image getImage(int y, Players type) {
-		if(y == 0) return (new Pawn(type).getImage());
-		else if(y == 1) return (new Queen(type).getImage());
-		else if(y == 2) return (new Knight(type).getImage());
-		else if(y == 3) return (new Bishop(type).getImage());
-		else return (new Rook(type).getImage());
+	/**
+	 * Will create a throw-away instance of a piece to acquire the piece's image.
+	 * Each type of piece has an arbitrary ID (King has no ID):
+	 * Pawn ID = 0 ; 
+	 * Queen ID = 1; 
+	 * Knight ID = 2;
+	 * Bishop ID = 3;
+	 * Rook ID = 4 (and up);
+	 * @param ID - The Arbitrary number indicating each type of piece
+	 * @param color - The color of the piece
+	 * @return
+	 */
+	private Image getImage(int ID, Players color) {
+		if(ID == 0) return (new Pawn(color).getImage());
+		else if(ID == 1) return (new Queen(color).getImage());
+		else if(ID == 2) return (new Knight(color).getImage());
+		else if(ID == 3) return (new Bishop(color).getImage());
+		else return (new Rook(color).getImage());
 	}
 	
+	/**
+	 * Gets the type of piece based on the arbitrary ID passed.
+	 * @param y
+	 * @return
+	 */
 	private Pieces getType(int y) {
 		if(y == 0) return Pieces.PAWN;
 		else if(y == 1) return Pieces.QUEEN;
@@ -426,10 +527,19 @@ public class Board extends Coordinate implements Enums{
 		else return Pieces.ROOK;
 	}
 	
+	/**
+	 * Accesses the {@link #EliminatedPieces} list to determine how many of a type (& color) of piece has been eliminated.
+	 * @param type - The type of piece
+	 * @param color - The color of the piece
+	 * @return The number of eliminated pieces.
+	 */
 	private int getKillCount(Pieces type, Players color) {
 		return (int)EliminatedPieces.stream().filter(piece -> (piece.color == color && piece.type == type)).count();
 	}
 
+	/**
+	 * Updates the visual Eliminated List of the white pieces.
+	 */
 	private void UpdateWhiteElim() {
 		Pane pane;
 		ImageView imgView;
@@ -449,6 +559,9 @@ public class Board extends Coordinate implements Enums{
 		}
 	}
 
+	/**
+	 * Resets the tiles' colors to their original colors.
+	 */
 	public void resetColor() {
 		// start first as white
 		Pane pane = PlayingBoardPane[0][0];
@@ -474,6 +587,10 @@ public class Board extends Coordinate implements Enums{
 		}
 	}
 	
+	/**
+	 * Visually shows the available move of a piece by highlighting the available tiles.
+	 * @param validCoordinates - A list of the coordinates the piece can be moved to.
+	 */
 	private void ShowMoves(List<Coordinate> validCoordinates) {
 		validCoordinates.forEach(coordinate -> {
 			Rectangle rect = getColorRect(PlayingBoardPane[coordinate.getY() - 1][coordinate.getX() - 1]);
@@ -481,22 +598,45 @@ public class Board extends Coordinate implements Enums{
 		});
 	}
 	
+	/**
+	 * Gets the rectangle within a pane at a given coordinate
+	 * @param coor - The coordinate of the pane / rectangle.
+	 * @return The rectangle at the coordinate.
+	 */
 	public Rectangle getColorRectangleAt(Coordinate coor) {
 		return (Rectangle)PlayingBoardPane[coor.getY() - 1][coor.getX() - 1].getChildren().get(0);
 	}
 	
-	private Players invertColor(Players turn) {
-		return (turn == Players.WHITE) ? Players.BLACK : Players.WHITE; 
+	/**
+	 * Equivalent of a ! for Players.
+	 * @param color - The color being negated
+	 * @return The opposite color of the argument
+	 */
+	private Players invertColor(Players color) {
+		return (color == Players.WHITE) ? Players.BLACK : Players.WHITE; 
 	}
 	
+	/**
+	 * Updates the turn (flips it)
+	 */
 	private void ChangeTurn() {
 		turn = (turn == Players.WHITE) ? Players.BLACK : Players.WHITE;	
 	}
 	
+	/**
+	 * Changes the text displayed by the Messenger TextField
+	 * @param string - The message
+	 */
 	public void SetMessage(String string) {
 		Messenger.setText(string);
 	}
 	
+	/**
+	 * An extension of the TimerTask class.
+	 * Will act as the speed chess timers and the count-down timer.
+	 * @author Shady
+	 *
+	 */
 	class ChessTimer extends TimerTask{
 		private long remainingTime;
 		private Players player;
@@ -504,6 +644,11 @@ public class Board extends Coordinate implements Enums{
 		private long TimeWanted;
 		private int times;
 		
+		/**
+		 * Constructor used for the main timers
+		 * @param allottedTime - Time given
+		 * @param player - The player the timer is associated with.
+		 */
 		public ChessTimer(long allottedTime, Players player) {
 			this.allottedTime = allottedTime;
 			this.remainingTime = allottedTime;
@@ -511,16 +656,21 @@ public class Board extends Coordinate implements Enums{
 			times = 0;
 		}
 		
-		public ChessTimer(long allottedTime, Players player, long TimeWanted) {
+		/**
+		 * Constructor used in the creation of the count-down timer
+		 * @param allottedTime - Time before game starts
+		 * @param TimeWanted - Time wanted for the regular speed chess timers.
+		 */
+		public ChessTimer(long allottedTime, long TimeWanted) {
 			this.allottedTime = allottedTime;
 			this.remainingTime = allottedTime;
-			this.player = player;
 			this.TimeWanted = TimeWanted;
 			times = 0;
 		}
 		
 		@Override
 		public void run() {
+			// ONLY starting timer has 7 seconds
 			if(allottedTime == 7000) {
 				long remainingTime = getRemainingTime();
 				if(remainingTime <= 0 && times == 0) {
@@ -582,20 +732,39 @@ public class Board extends Coordinate implements Enums{
 			}
 		}
 		
+		/**
+		 * Converts milliseconds to seconds
+		 * @param milli - The amount of milliseconds.
+		 * @return X seconds worth of the passed milliseconds.
+		 */
 		private long toSecond(long milli) {
 			return milli / 1000;
 		}
 		
+		/**
+		 * Formats the number of seconds into MM : SS format
+		 * @param timeInSec - Number of seconds.
+		 * @return A string with the formatted time
+		 */
 		private String toMinute(long timeInSec) {
 			long minutes = timeInSec / 60;
 			return Format(minutes) + " : " + Format(timeInSec - (minutes * 60));
 		}
 		
+		/**
+		 * Subtracts 1000 from the remainingTime instance variable (represents 1 second)
+		 * @return The time after the subtraction in seconds.
+		 */
 		private long getRemainingTime() {
 			this.remainingTime -= 1000;
 			return this.remainingTime / 1000;
 		}
 		
+		/**
+		 * Formats an individual amount of time to have 2 digits.
+		 * @param time - The time being formatted
+		 * @return The time is XX format
+		 */
 		private String Format(long time) {
 			String Time = "" + time;
 			return ((Time.length() == 1) ? "0" + Time : Time);
@@ -603,6 +772,9 @@ public class Board extends Coordinate implements Enums{
 		
 	}
 	
+	/**
+	 * String version of the literal board.
+	 */
 	public String toString() {
 		String grid = "";
 		for(int y = Piece.UpperLimit - 1; y >= 0; y--) {

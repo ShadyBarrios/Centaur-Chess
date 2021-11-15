@@ -51,6 +51,7 @@ public class Pawn extends Piece{
 	 */
 	public Pawn(Players color) {
 		this.color = color;
+		ConstructRest();
 	}
 
 	@Override

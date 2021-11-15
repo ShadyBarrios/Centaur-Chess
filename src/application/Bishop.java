@@ -7,7 +7,8 @@ import javafx.scene.image.Image;
 
 /**
  * Class representing the Bishop chess piece.
- * @author Shady
+ * @author Shady 
+ * 
  */
 public class Bishop extends Piece{
 	
