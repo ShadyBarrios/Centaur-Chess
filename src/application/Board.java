@@ -27,6 +27,11 @@ import javafx.scene.layout.Pane;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
+/**
+ * Technically the driver that handles the game itself.
+ * @author Shady
+ *
+ */
 public class Board extends Coordinate implements Enums{
 	private String[][] PlayingBoardDisplay;
 	public static Piece[][] PlayingBoard;
@@ -45,6 +50,10 @@ public class Board extends Coordinate implements Enums{
 	private static ChessTimer BlackTimer, WhiteTimer, CountdownTimer;
 	private static Timer RealBlackTimer, RealWhiteTimer, RealCountdownTimer;
 	
+	/**
+	 * Constructs a null version of the visual and literal Playing Boards,
+	 *  as well as a null version of the Eliminated Pieces side displays.
+	 */
 	public Board() {
 		PlayingBoardDisplay = new String[8][8];
 		PlayingBoard = new Piece[8][8];
@@ -72,11 +81,25 @@ public class Board extends Coordinate implements Enums{
 		turn = Players.WHITE;
 	}
 	
+	/**
+	 * @param pieces - A full set of pieces.
+	 */
 	public Board(List<Piece> pieces) {
 		this();
 		addAll(pieces);	
 	}
 	
+	/**
+	 * Populates the previously created gui components and starts the speed chess timers if requested.
+	 * @param pieces - A full set of pieces
+	 * @param grid - The GUI chess board
+	 * @param Messenger - The TextField used to display the current turn and errors.
+	 * @param blackElim - The GUI list of eliminated black pieces.
+	 * @param whiteElim - The GUI list of eliminated white pieces.
+	 * @param GUIB - The Text used to display the remaining time for the black player or "Chess"
+	 * @param GUIW - The Text used to display the remaining time for the white player or "Centaur".
+	 * @param TimeWanted - The time requested (speed chess) by the player.
+	 */
 	public Board(List<Piece> pieces, GridPane grid, TextField Messenger, GridPane blackElim, GridPane whiteElim, Text GUIB, Text GUIW, long TimeWanted) {
 		this(pieces);
 		for(int y = 1; y <= 8; y++) {

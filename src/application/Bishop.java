@@ -5,10 +5,14 @@ import java.util.List;
 
 import javafx.scene.image.Image;
 
+/**
+ * Class representing the Bishop chess piece.
+ * @author Shady
+ */
 public class Bishop extends Piece{
 	
-	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteBishop.png";
-	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackBishop.png";
+	private String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteBishop.png";
+	private String PathToBlack = "file:///C:/Users/scott/Downloads/BlackBishop.png";
 	
 	@Override
 	protected void ConstructRest() {
@@ -17,18 +21,31 @@ public class Bishop extends Piece{
 		this.thickness = Thickness.SKINNY;
 	}
 	
-	public Bishop(Players type, int x, int y) {
-		super(type, x, y);
+	/**
+	 * @param color - The color of player the piece belongs to.
+	 * @param x - The column the piece is on.
+	 * @param y - The row the piece is on.
+	 */
+	public Bishop(Players color, int x, int y) {
+		super(color, x, y);
 		ConstructRest();
 	}
 	
-	public Bishop(Players type, Coordinate coor) {
-		super(type, coor);
+	/**
+	 * @param color - The color of player the piece belongs to.
+	 * @param coor - The coordinate the piece starts on.
+	 */
+	public Bishop(Players color, Coordinate coor) {
+		super(color, coor);
 		ConstructRest();
 	}
 	
-	public Bishop(Players type) {
-		image = (type == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+	/**
+	 * Constructs a bare bones version of the piece. Mainly used to get images for the GUI Body Counter.
+	 * @param color - The color of player the piece belongs to. 
+	 */
+	public Bishop(Players color) {
+		image = (color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 	}
 
 	@Override

@@ -5,6 +5,11 @@ import javafx.scene.control.TextField;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 
+/**
+ * Class defined as controller for Javafx application. Hands all control to Board.java
+ * @author Shady
+ */
+
 public class Controller {
 	@FXML
 	private GridPane ChessBoard, BlackElim, WhiteElim;

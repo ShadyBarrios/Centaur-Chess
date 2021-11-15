@@ -5,6 +5,11 @@ import java.util.Arrays;
 import java.util.List;
 import javafx.scene.image.Image;
 
+/**
+ * Class representing a Pawn chess piece
+ * @author Shady
+ *
+ */
 public class Pawn extends Piece{
 	
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhitePawn.png";
@@ -21,18 +26,31 @@ public class Pawn extends Piece{
 		bannedPawns = new ArrayList<Integer>();
 	}
 	
-	public Pawn(Players type, int x, int y) {
-		super(type, x, y);
+	/**
+	 * @param color - The color of player the piece belongs to.
+	 * @param x - The column the piece is on.
+	 * @param y - The row the piece is on.
+	 */
+	public Pawn(Players color, int x, int y) {
+		super(color, x, y);
 		ConstructRest();
 	}
 	
-	public Pawn(Players type, Coordinate coor) {
-		super(type, coor);
+	/**
+	 * @param color - The color of player the piece belongs to.
+	 * @param coor - The coordinate the piece starts on.
+	 */
+	public Pawn(Players color, Coordinate coor) {
+		super(color, coor); 
 		ConstructRest();
 	}
 	
-	public Pawn(Players type) {
-		image = (type == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+	/**
+	 * Constructs a bare bones version of the piece. Mainly used to get images for the GUI Body Counter.
+	 * @param color - The color of player the piece belongs to. 
+	 */
+	public Pawn(Players color) {
+		this.color = color;
 	}
 
 	@Override
@@ -48,6 +66,10 @@ public class Pawn extends Piece{
 		return coordinates;
 	}
 	
+	/**
+	 * Direction of coordinates depends on pawn's color.
+	 * @return A list of the coordinates the pawn can move to (in same column).
+	 */
 	private List<Coordinate> getVertical(){
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		int currentX = currentPosition.getX();
@@ -73,6 +95,10 @@ public class Pawn extends Piece{
 		return coordinates;
 	}
 	
+	/**
+	 * Valid coordinates for the pawn to eliminate pieces
+	 * @return A list of coordinates for when the pawn can eliminate a piece (including En Passant).
+	 */
 	private List<Coordinate> eliminationCoordinates(){
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		int currentX = currentPosition.getX();
@@ -128,6 +154,10 @@ public class Pawn extends Piece{
 		return coordinates;
 	}
 	
+	/**
+	 * Valid coordinates to execute an En Passant
+	 * @return A list of coordinates for when the pawn can execute an En Passant move 
+	 */
 	public List<Coordinate> EnPassant(){
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		int currentX = currentPosition.getX();
@@ -174,6 +204,10 @@ public class Pawn extends Piece{
 		return coordinates;
 	}
 	
+	/**
+	 * Creates a full set of pawns for both sides.
+	 * @return A 16 total Pawn objects (8 White / 8 Black).
+	 */
 	public static List<Pawn> createPawns(){
 		Pawn[] pawns = new Pawn[16];
 		

@@ -5,6 +5,10 @@ import java.util.List;
 
 import javafx.scene.image.Image;
 
+/**
+ * Class representing a Knight chess piece
+ * @author Shady
+ */
 public class Knight extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteKnight.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackKnight.png";
@@ -16,18 +20,31 @@ public class Knight extends Piece{
 		this.thickness = Thickness.THICK;
 	}
 	
-	public Knight(Players type, int x, int y) {
-		super(type, x, y);
+	/**
+	 * @param color - The color of player the piece belongs to.
+	 * @param x - The column the piece is on.
+	 * @param y - The row the piece is on.
+	 */
+	public Knight(Players color, int x, int y) {
+		super(color, x, y);
 		ConstructRest();
 	}
 	
-	public Knight(Players type, Coordinate coor) {
-		super(type, coor);
+	/**
+	 * @param color - The color of player the piece belongs to.
+	 * @param coor - The coordinate the piece starts on.
+	 */
+	public Knight(Players color, Coordinate coor) {
+		super(color, coor);
 		ConstructRest();
 	}
 	
-	public Knight(Players type) {
-		image = (type == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
+	/**
+	 * Constructs a bare bones version of the piece. Mainly used to get images for the GUI Body Counter.
+	 * @param color - The color of player the piece belongs to. 
+	 */
+	public Knight(Players color) {
+		image = (color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 	}
 
 	@Override
@@ -45,6 +62,10 @@ public class Knight extends Piece{
 		return coordinates;
 	}
 	
+	/**
+	 * Qn represents the nth quadrant on a graph with the piece being the origin.
+	 * @return A list of the available moves in the 1st quadrant.
+	 */
 	public List<Coordinate> Q1Coordinates(){
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		final int currentX = currentPosition.getX();
@@ -68,6 +89,10 @@ public class Knight extends Piece{
 		return coordinates;
 	}
 	
+	/**
+	 * Qn represents the nth quadrant on a graph with the piece being the origin.
+	 * @return A list of the available moves in the 2nd quadrant.
+	 */
 	public List<Coordinate> Q2Coordinates(){
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		final int currentX = currentPosition.getX();
@@ -91,6 +116,10 @@ public class Knight extends Piece{
 		return coordinates;
 	}
 	
+	/**
+	 * Qn represents the nth quadrant on a graph with the piece being the origin.
+	 * @return A list of the available moves in the 3rd quadrant.
+	 */
 	public List<Coordinate> Q3Coordinates(){
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		final int currentX = currentPosition.getX();
@@ -114,6 +143,10 @@ public class Knight extends Piece{
 		return coordinates;
 	}
 	
+	/**
+	 * Qn represents the nth quadrant on a graph with the piece being the origin.
+	 * @return A list of the available moves in the 4th quadrant.
+	 */
 	public List<Coordinate> Q4Coordinates(){
 		List<Coordinate> coordinates = new ArrayList<Coordinate>();
 		final int currentX = currentPosition.getX();

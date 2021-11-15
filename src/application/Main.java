@@ -12,10 +12,17 @@ import javafx.stage.Stage;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 
-
+/**
+ * Launch Class
+ * @author Shady
+ */
 public class Main extends Application {
 	public static long TimeWanted;
 	
+	/**
+	 * Will create the Scene/Window for Centaur Chess.
+	 * Before the chess board is loaded, the user is prompted to choose between regular chess or speed chess.
+	 */
 	@Override
 	public void start(Stage stage) throws Exception{
 		int choice = -1;
@@ -60,6 +67,8 @@ public class Main extends Application {
 			
 			TimeWanted = (minutes * 60) + seconds;
 		}
+		else if(choice == -1)
+			return;
 		else
 			TimeWanted = -1;
 		
