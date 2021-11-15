@@ -54,7 +54,7 @@ public class Coordinate{
 	
 	/**
 	 * 
-	 * @param coor
+	 * @param coor - Coordinate being compared to
 	 * @return The absolute value difference between the y components of the coordinates.
 	 */
 	public int yDifference(Coordinate coor) {

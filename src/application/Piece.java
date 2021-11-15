@@ -111,6 +111,7 @@ abstract class Piece implements Enums{
 
 	/**
 	 * Calculates all the possible moves of the pieces and then determines if the argument is valid.
+	 * @param coor - the tile being verified
 	 * @return boolean indicating if the piece can move to the passed coordinate.
 	 */
 	public boolean isOnLine(Coordinate coor) {
