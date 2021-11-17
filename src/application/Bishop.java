@@ -14,12 +14,14 @@ public class Bishop extends Piece{
 	
 	private String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteBishop.png";
 	private String PathToBlack = "file:///C:/Users/scott/Downloads/BlackBishop.png";
+	// value == 3
 	
 	@Override
 	protected void ConstructRest() {
 		this.type = Pieces.BISHOP;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 		this.thickness = Thickness.SKINNY;
+		this.value = 3;
 	}
 	
 	/**

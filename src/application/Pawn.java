@@ -14,6 +14,7 @@ public class Pawn extends Piece{
 	
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhitePawn.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackPawn.png";
+	// value = 1
 	
 	List<Integer> bannedPawns;
 	
@@ -23,6 +24,7 @@ public class Pawn extends Piece{
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 		this.thickness = Thickness.THICK;
 		this.numberOfMoves = 0;
+		this.value = 1;
 		bannedPawns = new ArrayList<Integer>();
 	}
 	

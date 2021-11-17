@@ -626,5 +626,15 @@
             <Font name="Georgia" size="16.0" />
          </font>
       </Text>
+      <Text fx:id="DisplayWhiteElims" layoutX="55.0" layoutY="585.0" strokeType="OUTSIDE" strokeWidth="0.0" text="POINTS" textAlignment="CENTER" wrappingWidth="69.0">
+         <font>
+            <Font name="Georgia" size="16.0" />
+         </font>
+      </Text>
+      <Text fx:id="DisplayBlackElims" layoutX="792.0" layoutY="577.0" strokeType="OUTSIDE" strokeWidth="0.0" text="POINTS" textAlignment="CENTER" wrappingWidth="69.0">
+         <font>
+            <Font name="Georgia" size="16.0" />
+         </font>
+      </Text>
    </children>
 </AnchorPane>

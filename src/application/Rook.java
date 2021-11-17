@@ -14,12 +14,14 @@ import javafx.scene.image.Image;
 public class Rook extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteRook.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackRook.png";
+	// value == 5
 	
 	@Override
 	protected void ConstructRest() {
 		this.type = Pieces.ROOK;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 		this.thickness = Thickness.THICK;
+		this.value = 5;
 	}
 	
 	/**

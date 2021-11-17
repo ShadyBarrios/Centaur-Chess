@@ -12,12 +12,14 @@ import javafx.scene.image.Image;
 public class Queen extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteQueen.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackQueen.png";
+	// value == 9
 	
 	@Override
 	protected void ConstructRest() {
 		this.type = Pieces.QUEEN;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 		this.thickness = Thickness.SKINNY;
+		this.value = 9;
 	}
 	
 	/**

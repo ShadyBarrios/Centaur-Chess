@@ -13,6 +13,7 @@ abstract class Piece implements Enums{
 	protected Image image; // Image shown in FXML
 	
 	protected int numberOfMoves;
+	protected int value;
 	
 	boolean hasMoved;
 	

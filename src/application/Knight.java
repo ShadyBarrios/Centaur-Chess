@@ -12,12 +12,14 @@ import javafx.scene.image.Image;
 public class Knight extends Piece{
 	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteKnight.png";
 	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackKnight.png";
+	// value == 3
 	
 	@Override
 	protected void ConstructRest() {
 		this.type = Pieces.KNIGHT;
 		image = (this.color == Players.BLACK) ? new Image(PathToBlack) : new Image(PathToWhite);
 		this.thickness = Thickness.THICK;
+		this.value = 3;
 	}
 	
 	/**

@@ -17,10 +17,10 @@ public class Controller {
 	@FXML
 	private TextField Messenger;
 	@FXML
-	private Text DisplayBlackTimer, DisplayWhiteTimer;
+	private Text DisplayBlackTimer, DisplayWhiteTimer, DisplayWhiteElims, DisplayBlackElims;
 	
 	public void initialize() {
-		 Board MasterBoard = new Board(Piece.CreatePieces(), ChessBoard, Messenger, BlackElim, WhiteElim, DisplayBlackTimer, DisplayWhiteTimer, Main.TimeWanted);
+		 Board MasterBoard = new Board(Piece.CreatePieces(), ChessBoard, Messenger, BlackElim, WhiteElim, DisplayBlackTimer, DisplayWhiteTimer, Main.TimeWanted, DisplayWhiteElims, DisplayBlackElims);
 		 MasterBoard.resetColor();
 		 MasterBoard.UpdateGUI();
 		 

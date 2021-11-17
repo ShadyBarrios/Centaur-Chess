@@ -49,8 +49,8 @@ public class Main extends Application {
 		
 		choice = JOptionPane.showOptionDialog(null, MainPanel, "Centaur Chess", JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, Options, null);
 		if(choice == 0) {
-			minInput = Minutes.getText();
-			secInput = Seconds.getText();
+			minInput = Minutes.getText().trim(); // removes all whitespace
+			secInput = Seconds.getText().trim(); // removes all whitespace
 			
 			try{
 				minutes = Integer.parseInt(minInput);

@@ -43,7 +43,7 @@ public class Board extends Coordinate implements Enums{
 	private final Paint BLUE = Paint.valueOf("#49d6e9"), GREEN = Paint.valueOf("#75c367"), WHITE = Paint.valueOf("#ffffff");
 	private List<Piece> EliminatedPieces;
 	public TextField Messenger;
-	public Text DisplayBlackTimer, DisplayWhiteTimer;
+	public Text DisplayBlackTimer, DisplayWhiteTimer, DisplayWhiteElims, DisplayBlackElims;
 	private boolean justEliminated;
 	private boolean GameOver;
 	private GridPane grid;
@@ -100,8 +100,10 @@ public class Board extends Coordinate implements Enums{
 	 * @param GUIB - The Text used to display the remaining time for the black player or "Chess"
 	 * @param GUIW - The Text used to display the remaining time for the white player or "Centaur".
 	 * @param TimeWanted - The time requested (speed chess) by the player.
+	 * @param WhiteElims - Text javafx property displaying points of eliminated white pieces
+	 * @param BlackElims - Text javafx property displaying points of eliminated black pieces
 	 */
-	public Board(List<Piece> pieces, GridPane grid, TextField Messenger, GridPane blackElim, GridPane whiteElim, Text GUIB, Text GUIW, long TimeWanted) {
+	public Board(List<Piece> pieces, GridPane grid, TextField Messenger, GridPane blackElim, GridPane whiteElim, Text GUIB, Text GUIW, long TimeWanted, Text WhiteElims, Text BlackElims) {
 		this(pieces);
 		for(int y = 1; y <= 8; y++) {
 			for(int x = 1; x <= 8; x++) {
@@ -116,6 +118,8 @@ public class Board extends Coordinate implements Enums{
 		
 		this.DisplayBlackTimer = GUIB;
 		this.DisplayWhiteTimer = GUIW;
+		this.DisplayWhiteElims = WhiteElims;
+		this.DisplayBlackElims = BlackElims;
 		
 		UpdateBlackElim();
 		UpdateWhiteElim();
@@ -492,6 +496,12 @@ public class Board extends Coordinate implements Enums{
 			label.setText("" + killCount);
 			imgView.setImage(image);
 		}
+		
+
+		List<Piece> eliminatedBlacks = EliminatedPieces.stream().filter(piece -> piece.color == Players.BLACK).toList();
+		DisplayBlackElims.setText("0");
+		if(!eliminatedBlacks.isEmpty())
+			eliminatedBlacks.forEach(piece -> DisplayBlackElims.setText(String.valueOf(Integer.parseInt(DisplayBlackElims.getText()) + piece.value)));
 	}
 	
 	/**
@@ -557,6 +567,11 @@ public class Board extends Coordinate implements Enums{
 			label.setText("" + killCount);
 			imgView.setImage(image);
 		}
+		
+		List<Piece> eliminatedWhites = EliminatedPieces.stream().filter(piece -> piece.color == Players.WHITE).toList();
+		DisplayWhiteElims.setText("0");
+		if(!eliminatedWhites.isEmpty())
+			eliminatedWhites.forEach(piece -> DisplayWhiteElims.setText(String.valueOf(Integer.parseInt(DisplayWhiteElims.getText()) + piece.value)));
 	}
 
 	/**
