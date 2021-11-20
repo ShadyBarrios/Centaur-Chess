@@ -12,8 +12,8 @@ import javafx.scene.image.Image;
  */
 
 public class Rook extends Piece{
-	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteRook.png";
-	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackRook.png";
+	String PathToWhite = "file:///../ChessPieces/WhiteRook.png";
+	String PathToBlack = "file:///../ChessPieces/BlackRook.png";
 	// value == 5
 	
 	@Override

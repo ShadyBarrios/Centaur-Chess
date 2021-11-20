@@ -11,8 +11,8 @@ import javafx.scene.image.Image;
  */
 public class King extends Piece{
 	
-	String PathToWhite = "file:///C:/Users/scott/Desktop/Chess Elements/WhiteKing.png";
-	String PathToBlack = "file:///C:/Users/scott/Desktop/Chess Elements/BlackKing.png";
+	String PathToWhite = "file:///../ChessPieces/WhiteKing.png";
+	String PathToBlack = "file:///../ChessPieces/BlackKing.png";
 	
 	@Override
 	protected void ConstructRest() {

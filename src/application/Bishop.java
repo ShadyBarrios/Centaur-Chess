@@ -12,8 +12,8 @@ import javafx.scene.image.Image;
  */
 public class Bishop extends Piece{
 	
-	private String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteBishop.png";
-	private String PathToBlack = "file:///C:/Users/scott/Downloads/BlackBishop.png";
+	private String PathToWhite = "file:///../ChessPieces/WhiteBishop.png";
+	private String PathToBlack = "file:///../ChessPieces/BlackBishop.png";
 	// value == 3
 	
 	@Override

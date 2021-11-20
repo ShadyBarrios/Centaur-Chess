@@ -12,8 +12,8 @@ import javafx.scene.image.Image;
  */
 public class Pawn extends Piece{
 	
-	String PathToWhite = "file:///C:/Users/scott/Downloads/WhitePawn.png";
-	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackPawn.png";
+	String PathToWhite = "file:///../ChessPieces/WhitePawn.png";
+	String PathToBlack = "file:///../ChessPieces/BlackPawn.png";
 	// value = 1
 	
 	List<Integer> bannedPawns;

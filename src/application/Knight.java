@@ -10,8 +10,8 @@ import javafx.scene.image.Image;
  * @author Shady
  */
 public class Knight extends Piece{
-	String PathToWhite = "file:///C:/Users/scott/Downloads/WhiteKnight.png";
-	String PathToBlack = "file:///C:/Users/scott/Downloads/BlackKnight.png";
+	String PathToWhite = "file:///../ChessPieces/WhiteKnight.png";
+	String PathToBlack = "file:///../ChessPieces/BlackKnight.png";
 	// value == 3
 	
 	@Override
